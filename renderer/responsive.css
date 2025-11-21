@@ -1,0 +1,403 @@
+/* ==================== RESPONSIVE ENHANCEMENTS ==================== */
+
+/* Container System */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+.content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 clamp(15px, 4vw, 40px);
+}
+
+/* Enhanced Grid System */
+.responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: clamp(15px, 3vw, 30px);
+  width: 100%;
+}
+
+.responsive-grid.two-column {
+  grid-template-columns: 1fr 1fr;
+}
+
+.responsive-grid.three-column {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Card System */
+.responsive-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: clamp(12px, 2vw, 20px);
+  padding: clamp(15px, 3vw, 25px);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+  min-height: fit-content;
+}
+
+.responsive-card:hover {
+  border-color: var(--border-light);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.responsive-card.compact {
+  padding: clamp(10px, 2vw, 15px);
+}
+
+.responsive-card.spacious {
+  padding: clamp(20px, 4vw, 35px);
+}
+
+/* Typography System */
+.responsive-heading {
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  font-weight: 600;
+  margin: 0 0 clamp(10px, 2vw, 20px);
+  line-height: 1.2;
+}
+
+.responsive-heading.large {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+}
+
+.responsive-heading.small {
+  font-size: clamp(1rem, 2vw, 1.4rem);
+}
+
+.responsive-text {
+  font-size: clamp(0.85rem, 1.8vw, 1rem);
+  line-height: 1.5;
+  margin: 0 0 clamp(8px, 1.5vw, 15px);
+}
+
+.responsive-text.small {
+  font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+}
+
+.responsive-text.large {
+  font-size: clamp(1rem, 2.2vw, 1.2rem);
+}
+
+/* Button System */
+.responsive-button {
+  border: none;
+  padding: clamp(10px, 2vw, 16px) clamp(16px, 3vw, 24px);
+  border-radius: clamp(8px, 1.5vw, 12px);
+  font-weight: 600;
+  font-size: clamp(0.8rem, 1.8vw, 1rem);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  min-height: clamp(40px, 8vw, 50px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.responsive-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.responsive-button:active {
+  transform: translateY(0);
+}
+
+.responsive-button.large {
+  padding: clamp(14px, 2.5vw, 20px) clamp(20px, 3.5vw, 28px);
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  min-height: clamp(50px, 9vw, 60px);
+}
+
+.responsive-button.small {
+  padding: clamp(6px, 1.5vw, 10px) clamp(12px, 2.5vw, 16px);
+  font-size: clamp(0.7rem, 1.5vw, 0.85rem);
+  min-height: clamp(32px, 6vw, 40px);
+}
+
+/* Input System */
+.responsive-input {
+  width: 100%;
+  padding: clamp(10px, 2vw, 15px) clamp(12px, 2.5vw, 18px);
+  border-radius: clamp(8px, 1.5vw, 12px);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  font-size: clamp(0.85rem, 1.8vw, 1rem);
+  transition: all 0.3s ease;
+}
+
+.responsive-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(72, 3, 85, 0.1);
+}
+
+/* Layout Utilities */
+.flex-responsive {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(10px, 2vw, 20px);
+  align-items: center;
+}
+
+.flex-responsive.column {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.flex-responsive.center {
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-responsive.space-between {
+  justify-content: space-between;
+}
+
+.flex-responsive.space-around {
+  justify-content: space-around;
+}
+
+/* Spacing System */
+.spacing-xs { margin: clamp(4px, 1vw, 8px); }
+.spacing-sm { margin: clamp(8px, 1.5vw, 12px); }
+.spacing-md { margin: clamp(12px, 2vw, 20px); }
+.spacing-lg { margin: clamp(20px, 3vw, 30px); }
+.spacing-xl { margin: clamp(30px, 4vw, 40px); }
+
+.spacing-top-xs { margin-top: clamp(4px, 1vw, 8px); }
+.spacing-top-sm { margin-top: clamp(8px, 1.5vw, 12px); }
+.spacing-top-md { margin-top: clamp(12px, 2vw, 20px); }
+.spacing-top-lg { margin-top: clamp(20px, 3vw, 30px); }
+.spacing-top-xl { margin-top: clamp(30px, 4vw, 40px); }
+
+.spacing-bottom-xs { margin-bottom: clamp(4px, 1vw, 8px); }
+.spacing-bottom-sm { margin-bottom: clamp(8px, 1.5vw, 12px); }
+.spacing-bottom-md { margin-bottom: clamp(12px, 2vw, 20px); }
+.spacing-bottom-lg { margin-bottom: clamp(20px, 3vw, 30px); }
+.spacing-bottom-xl { margin-bottom: clamp(30px, 4vw, 40px); }
+
+.padding-xs { padding: clamp(4px, 1vw, 8px); }
+.padding-sm { padding: clamp(8px, 1.5vw, 12px); }
+.padding-md { padding: clamp(12px, 2vw, 20px); }
+.padding-lg { padding: clamp(20px, 3vw, 30px); }
+.padding-xl { padding: clamp(30px, 4vw, 40px); }
+
+/* Visibility Utilities */
+.hide-mobile {
+  display: block;
+}
+
+.hide-tablet {
+  display: block;
+}
+
+.hide-desktop {
+  display: none;
+}
+
+.show-mobile {
+  display: none;
+}
+
+.show-tablet {
+  display: none;
+}
+
+.show-desktop {
+  display: block;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1024px) {
+  .responsive-grid.two-column {
+    grid-template-columns: 1fr;
+  }
+  
+  .responsive-grid.three-column {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .hide-tablet {
+    display: none;
+  }
+  
+  .show-tablet {
+    display: block;
+  }
+}
+
+@media (max-width: 768px) {
+  .responsive-grid {
+    grid-template-columns: 1fr;
+    gap: clamp(12px, 2.5vw, 20px);
+  }
+  
+  .responsive-grid.three-column {
+    grid-template-columns: 1fr;
+  }
+  
+  .flex-responsive {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .flex-responsive.mobile-row {
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  .hide-mobile {
+    display: none;
+  }
+  
+  .show-mobile {
+    display: block;
+  }
+  
+  .hide-tablet {
+    display: none;
+  }
+  
+  .show-tablet {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .responsive-card {
+    padding: clamp(10px, 2.5vw, 15px);
+  }
+  
+  .responsive-button {
+    width: 100%;
+    margin-bottom: clamp(8px, 1.5vw, 12px);
+  }
+  
+  .responsive-button.inline {
+    width: auto;
+    margin-bottom: 0;
+  }
+}
+
+/* Animation Utilities */
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.slide-up {
+  animation: slideUp 0.6s ease-out;
+}
+
+.slide-left {
+  animation: slideLeft 0.6s ease-out;
+}
+
+.slide-right {
+  animation: slideRight 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes slideLeft {
+  from { 
+    opacity: 0; 
+    transform: translateX(-30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes slideRight {
+  from { 
+    opacity: 0; 
+    transform: translateX(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+/* Performance Optimizations */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.smooth-scroll {
+  scroll-behavior: smooth;
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --text: #1a1a1a;
+    --text-muted: rgba(26, 26, 26, 0.7);
+    --text-dim: rgba(26, 26, 26, 0.5);
+    --card: rgba(255, 255, 255, 0.9);
+    --card-hover: rgba(255, 255, 255, 0.95);
+    --border: rgba(0, 0, 0, 0.1);
+    --border-light: rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Focus Management */
+.focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Print Styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .responsive-card {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+}

@@ -1,0 +1,169 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- Helper Functions ----------
+    function signedIn() {
+      return request.auth != null;
+    }
+    function isAdmin() {
+      return signedIn() && (request.auth.token.email == 'teamseekunique@gmail.com');
+    }
+    function isOwner(uid) {
+      return signedIn() && uid == request.auth.uid;
+    }
+
+    // ---------- USERS ----------
+    match /users/{uid} {
+      // Allow all authenticated users to read user profiles (for productivity charts)
+      allow read: if signedIn();
+      allow create, update: if isOwner(uid);
+      // Prevent clients from deleting user documents
+      allow delete: if isAdmin();
+    }
+
+    // ---------- USER TIME LOGS ----------
+    match /userTimeLogs/{uid} {
+      allow read: if isAdmin() || isOwner(uid);
+      match /logs/{logId} {
+        allow read: if isAdmin() || isOwner(uid);
+        allow create: if isOwner(uid) && request.resource.data.userId == request.auth.uid;
+        allow update, delete: if isOwner(uid) && resource.data.userId == request.auth.uid;
+      }
+    }
+
+    // ---------- TIME LOGS MASTER ----------
+    match /timeLogsMaster/{logId} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read, list, update, delete: if isAdmin();
+    }
+
+    // ---------- SIGNALS ----------
+    match /signals/{id} {
+      allow read, list: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---------- APPROVALS ----------
+    match /approvals/{id} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read, list: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+
+    // ---------- LIMITS ----------
+    match /limits/{uid} {
+      allow read: if isAdmin() || isOwner(uid);
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---------- ATTENDANCE ----------
+    match /attendance/{docId} {
+      allow read: if isAdmin() || (signedIn() && (
+        resource.data.uid == request.auth.uid ||
+        resource.data.userId == request.auth.uid
+      ));
+      allow create, update: if isAdmin() || (signedIn() && (
+        request.resource.data.uid == request.auth.uid ||
+        request.resource.data.userId == request.auth.uid
+      ));
+      allow delete: if isAdmin();
+
+      // Subcollections (attendance details)
+      match /{subCol}/{subDocId} {
+        allow read: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
+        allow create: if isAdmin() || (signedIn() && request.auth.uid == resource.data.uid);
+        allow update, delete: if isAdmin();
+      }
+    }
+
+    // ---------- ATTENDANCE HELPERS ----------
+    match /attendanceLogs/{id} {
+      allow read, list, create, update, delete: if isAdmin();
+    }
+    match /attendanceEvents/{id} {
+      allow read, list, create, update, delete: if isAdmin();
+    }
+    match /attendanceHistory/{id} {
+      allow read, list, create, update, delete: if isAdmin();
+    }
+
+    // ---------- EXIT REQUESTS ----------
+    match /exit_requests/{requestId} {
+      allow create: if signedIn() && request.resource.data.user_id == request.auth.uid;
+      allow read: if isAdmin() || (signedIn() && resource.data.user_id == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+
+    // ---------- NOTIFICATIONS ----------
+    match /notifications/{notificationId} {
+      allow create: if signedIn();
+      allow read, update: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
+    // ---------- HOURLY REPORTS ----------
+    match /hourlyReports/{reportId} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read, list: if signedIn(); // Allow all authenticated users to read and list all reports
+      allow update, delete: if isAdmin();
+    }
+
+    // ---------- TARGETS ----------
+    match /targets/{uid} {
+      allow read: if isAdmin() || isOwner(uid);
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---------- ACTIVE SESSIONS ----------
+    match /activeSessions/{uid} {
+      allow read: if isAdmin() || isOwner(uid);
+      allow create, update, delete: if isOwner(uid);
+    }
+
+    // ---------- PUBLIC PRODUCTIVITY ----------
+    match /publicProductivity/{userId} {
+      allow read: if signedIn();
+      allow write: if signedIn() && request.auth.uid == userId;
+    }
+
+    // ---------- COPYRIGHT REPORTS ----------
+    match /copyrightReports/{reportId} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+
+    // ---------- WORK REPORTS ----------
+    match /workReports/{reportId} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+
+    // ---------- EARLY EXIT REQUESTS ----------
+    match /earlyExitRequests/{requestId} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+
+    // ---------- OUTGOING EMAILS ----------
+    match /outgoingEmails/{emailId} {
+      allow create: if signedIn();
+      allow read, update, delete: if isAdmin();
+    }
+
+    // ---------- POPUP LOGS ----------
+    match /popupLogs/{logId} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    // ---------- CATCH-ALL ----------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

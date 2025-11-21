@@ -1,0 +1,440 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin — Seek Unique Timer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/png" href="../assets/seekuniquelogo.png" />
+  <meta name="theme-color" content="#1e003d"/>
+  <style>
+    :root{
+      --bg1:#1e003d; --bg2:#4b0082; --text:#fff;
+      --card:rgba(255,255,255,.08); --border:rgba(255,255,255,.11);
+      --shadow:0 28px 80px rgba(0,0,0,.38);
+      /* added for phases */
+      --phase-active:#10b981;
+      --phase-active-border:#0ea371;
+      --phase-bg:#0b1220;
+      --muted:#cbd5e1;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;color:var(--text);font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(1100px 800px at 12% 10%, rgba(255,255,255,.09), transparent 40%),
+        radial-gradient(900px 700px at 85% 8%, rgba(255,255,255,.07), transparent 40%),
+        linear-gradient(135deg,var(--bg1),var(--bg2));
+    }
+    .wrap{
+      max-width:1200px;margin:0 auto;padding:20px;
+      display:grid;grid-template-columns:1fr 1fr;gap:16px
+    }
+    .card{
+      border:1px solid var(--border);background:var(--card);
+      backdrop-filter:blur(16px);box-shadow:var(--shadow);
+      border-radius:16px;padding:16px
+    }
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    h3{margin:0 0 8px}
+    .muted{opacity:.75}
+    button{
+      border:none;border-radius:10px;padding:8px 12px;color:#fff;cursor:pointer;
+      background:linear-gradient(135deg,#4f46e5,#7c3aed)
+    }
+    .btn-danger{background:linear-gradient(135deg,#ef4444,#f97316)}
+    table{width:100%;border-collapse:collapse}
+    td,th{padding:8px;border-bottom:1px solid var(--border)}
+    .pill{border:none;border-radius:12px;padding:8px 10px;color:#fff;background:linear-gradient(135deg,#475569,#94a3b8);cursor:pointer}
+    .pill.active{background:linear-gradient(135deg,#7c3aed,#a78bfa)}
+    input[type="text"], input[type="date"], input[type="number"], select{
+      padding:8px;border-radius:10px;border:1px solid var(--border);
+      background:rgba(255,255,255,.06);color:#fff
+    }
+
+    /* ================= PHASE VIEW (added, sc!oped) ================= */
+    .phase-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+    .phase-count{
+      font-size:11px;padding:3px 8px;border-radius:999px;border:1px solid var(--border);color:var(--muted)
+    }
+    .phase-grid{
+      display:grid;gap:12px;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    }
+    .phase-card{
+      border:1px solid var(--border);border-radius:14px;padding:12px;
+      background:rgba(0,0,0,.2)
+    }
+    .phase-card-head{
+      display:flex;align-items:center;justify-content:space-between;margin-bottom:8px
+    }
+    .phase-card-title{font-weight:700}
+    .phase-card-sub{opacity:.7;font-size:12px}
+    .phase-pill{
+      font-size:11px;padding:3px 8px;border-radius:999px;border:1px solid var(--border);color:var(--muted)
+    }
+    .phase-rows{
+      display:grid;grid-template-columns:repeat(4,1fr);gap:8px
+    }
+    .phase-box{
+      border:1px solid var(--border);
+      border-radius:10px;padding:8px 10px;
+      font-size:12px;text-align:center;background:var(--phase-bg)
+    }
+    .phase-box.active{
+      background:var(--phase-active);color:#052e1c;border-color:var(--phase-active-border);font-weight:700
+    }
+    /* ============================================================= */
+
+    /* ✅ KPI active-phase cell styling (used by admin.js to highlight a user's live phase) */
+    td.kpi-cell{border-radius:8px}
+    td.kpi-cell.kpi-active{
+      border:1px solid var(--phase-active-border);
+      box-shadow:0 0 0 1px var(--phase-active-border) inset, 0 0 10px rgba(16,185,129,.25) inset;
+      color:var(--phase-active);
+      font-weight:700;
+    }
+    .att-dropdown {
+  display: none;
+  padding: 6px 12px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.att-row.expanded + .att-dropdown {
+  display: block;
+}
+.att-dropdown div {
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+.att-dropdown div:last-child {
+  border-bottom: none;
+}
+.att-toggle {
+  cursor: pointer;
+  color: var(--phase-active);
+  text-decoration: underline;
+  font-size: 13px;
+}
+.kpi-active{
+  border:2px solid #00ff66;
+  border-radius:6px;
+  padding:2px;
+  box-shadow: inset 0 0 0 1px #00ff66;
+  color:#00ff66;
+  font-weight:700;
+}
+
+/* Attendance history UI */
+.history-list { background: rgba(255,255,255,0.02); padding:10px; border-radius:8px; margin-top:12px; font-size:14px; color:var(--muted); }
+.history-item { padding:8px 0; border-bottom:1px solid var(--border); }
+.history-item:last-child { border-bottom:none; }
+.recent-box { font-size:13px; color:#fff; opacity:0.95; margin-top:8px; margin-bottom:6px; }
+  
+  /* ===== Hourly Reports scrollable table (approx 10 rows) ===== */
+  /* Keeps header sticky and makes tbody scrollable */
+  #hrTbl { 
+    display: block;
+    width: 100%;
+    max-height: 420px; /* adjust to fit ~10 rows depending on row height */
+    overflow-y: auto;
+    border-collapse: separate;
+  }
+  #hrTbl thead {
+    display: table;
+    width: calc(100% - 1em); /* account for scrollbar */
+    table-layout: fixed;
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: linear-gradient(135deg,#3b0066,#2b0048); /* match theme slightly darker */
+  }
+  #hrTbl tbody {
+    display: block;
+    width: 100%;
+  }
+  #hrTbl tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+  }
+  /* optional: make Productivity column narrower */
+  #hrTbl th:nth-child(5), #hrTbl td:nth-child(5) { width: 120px; text-align: left; }
+  #hrTbl th:nth-child(1), #hrTbl td:nth-child(1) { width: 180px; }
+  /* small visual tweak for scrollbar on dark background */
+  #hrTbl::-webkit-scrollbar { width: 10px; }
+  #hrTbl::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius:6px; }
+  #hrTbl::-webkit-scrollbar-track { background: transparent; }
+
+
+/* ===== Compact Limits table + Pin styles ===== */
+#limitsControls {
+  display:flex;
+  gap:12px;
+  align-items:center;
+  margin-bottom:12px;
+}
+#limitsControls input#limitsSearch{
+  padding:8px 12px;
+  border-radius:10px;
+  width:320px;
+  background:#24132b;
+  color:#f2eefe;
+  border:1px solid rgba(255,255,255,0.03);
+}
+#limitsTbl { font-size:13px; line-height:1.1; width:100%; border-collapse:collapse; }
+#limitsTbl thead th, #limitsTbl tbody td { padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.04); }
+#limitsTbl input[type="number"], #limitsTbl input[type="text"] {
+  padding:6px 8px; font-size:12px; height:30px; border-radius:8px;
+  background:#24132b; color:#fff; border:1px solid rgba(255,255,255,0.03);
+}
+#limitsTbl tbody tr { height:44px; }
+
+/* Pin (star) button */
+.pin-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size:16px;
+  line-height:1;
+  color: rgba(255,255,255,0.65);
+  padding:4px;
+  margin-right:8px;
+  border-radius:6px;
+}
+.pin-btn:hover { color: #ffd86b; background: rgba(255,255,255,0.02); }
+.pin-btn.pinned { color:#ffd86b; background: rgba(255,216,107,0.08); }
+
+/* Pager */
+#limitsPager { margin-left:auto; display:flex; align-items:center; gap:6px; }
+#limitsPager button { padding:6px 10px; border-radius:8px; background:transparent; border:1px solid rgba(255,255,255,0.03); color:#e8e8ff; cursor:pointer;}
+#limitsPager button.active { background:#3b0066; color:#fff; font-weight:700; }
+
+/* Hidden row helper */
+.row-hidden { display:none !important; }
+
+</style>
+ 
+<style>
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  min-width: 220px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: linear-gradient(135deg,#4f46e5,#7c3aed);
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+
+  /* keep text aligned nicely */
+  line-height: 1.4;
+}
+
+select option {
+  background: #2d1a4d;   /* dropdown background */
+  color: #fff;           /* option text */
+  padding: 8px 12px;
+}
+
+/* Hover / focus */
+select:focus {
+  outline: none;
+  border-color: #a78bfa;
+  box-shadow: 0 0 8px rgba(124,58,237,.5);
+}
+
+/* === Force dropdown to open downward === */
+select {
+  direction: ltr;
+}
+select option {
+  direction: ltr;
+}
+
+/* For Chromium-based browsers */
+select::-ms-expand {
+  display: none;
+}
+</style>
+
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="card" style="grid-column:1/-1">
+      <h3>Admin: <span id="adminMail" class="muted">—</span></h3>
+    </div>
+
+    <!-- NEW: Live User Phases (real-time) -->
+    <section class="card" style="grid-column:1/-1">
+      <div class="phase-head">
+        <h3 style="margin:0">Live User Phases</h3>
+        <span id="phaseCount" class="phase-count">0 active</span>
+      </div>
+      <div id="phaseGrid" class="phase-grid"></div>
+    </section>
+
+    <!-- Pending Approvals -->
+    <section class="card" style="grid-column:1/-1">
+      <h3>Pending Approvals</h3>
+      <table id="approvalsTbl">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Type</th>
+            <th>Reason</th>
+            <th>Time</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- Meeting -->
+    <section class="card">
+      <h3>Meeting Broadcast</h3>
+      <p>Start/Stop a company-wide meeting with one click.</p>
+      <button id="btnStartMeeting">Start Meeting (all)</button>
+      <button id="btnStopMeeting" class="btn-danger" style="margin-left:8px">Stop Meeting (all)</button>
+    </section>
+
+    <!-- Leaderboard -->
+    <section class="card">
+      <h3>Weekly Leaderboard (Top 10  Trimming Work)</h3>
+      <div id="leader" class="muted">Loading...</div>
+      <div class="row" style="margin-top:10px">
+        <input id="proxyUrl" type="text" placeholder="Apps Script Web App URL?hook=SLACK_WEBHOOK" style="flex:1;min-width:280px">
+        <button id="btnSaveProxy">Save Proxy URL</button>
+        <button id="btnSlack">Send to Slack</button>
+      </div>
+      <div class="muted" style="margin-top:6px">Tip: Save once. We store it in localStorage.</div>
+    </section>
+
+    <!-- KPI -->
+    <section class="card" style="grid-column:1/-1">
+      <h3>KPI — Per Editor</h3>
+      <div class="row" style="margin-bottom:10px">
+        <button class="pill active" data-range="daily">Daily</button>
+       
+        <div style="flex:1"></div>
+        <button id="btnExportKPI">Export KPI CSV</button>
+      </div>
+      <table id="kpiTbl">
+        <thead>
+        <tr>
+          <th>Name</th><th>Work</th><th>Meeting</th><th>Lunch</th><th>Break</th><th>SMM</th><th>Activity</th><th>CopyRight</th><th>Grand Total</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- Attendance (UPDATED: User filter + history panel) -->
+    <section class="card" style="grid-column:1/-1">
+      <h3>Attendance — Login / Logout</h3>
+
+      <div class="row" style="margin-bottom:8px; align-items:center;">
+        <label for="attDate">Date:</label>
+        <input id="attDate" type="date">
+
+        <!-- NEW: User filter select -->
+        <label for="attUser" style="margin-left:8px">User:</label>
+        <select id="attUser" style="min-width:220px; background-color:#4f46e5; color:white;">
+          <option value="all">All users</option>
+        </select>
+
+        <div style="flex:1"></div>
+        <button id="btnExportAtt">Export Attendance CSV</button>
+      </div>
+
+      <table id="attTbl">
+        <thead><tr><th>Name</th><th>Login</th><th>Logout</th><th>Office Hours</th><th>Last Seen</th></tr></thead>
+        <tbody></tbody>
+      </table>
+
+      <!-- NEW: Recent login + Combined history for selected user/day -->
+      <div id="attUserPanel">
+        <div id="attRecent" class="recent-box" style="display:none">
+          <strong>Recent Login:</strong> <span id="attRecentTime">—</span>
+        </div>
+        <div id="attHistoryContainer" class="history-list" style="display:none"></div>
+      </div>
+    </section>
+
+    <!-- Hourly Reports -->
+    <section class="card" style="grid-column:1/-1">
+      <h3>Hourly Reports (1-hour checkpoints)</h3>
+      <div class="row" style="margin-bottom:8px">
+        <label for="hrDate">Date:</label>
+        <input id="hrDate" type="date">
+        <label for="hrUser">User:</label>
+        <select id="hrUser" style="min-width:220px; background-color:#4f46e5; color:white;">
+          <option value="all">All users</option>
+          <option value="1">Employee 1</option>
+          <option value="2">Employee 2</option>
+          <option value="3">Employee 3</option>
+        </select>
+        <div style="flex:1"></div>
+        <button id="btnExportHR">Export Hourly CSV</button>
+      </div>
+      <table id="hrTbl">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Hour Window</th>
+            <th>Reported Focus</th>
+            <th>Set Target</th>
+            <th>Productivity</th>
+            <th>Submitted</th>
+          
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+   
+    <!-- Limits -->
+    <section class="card" style="grid-column:1/-1">
+      <h3>Per-Editor Limits</h3>
+      <p class="muted">Break &amp; SMM daily minute limits (blank = no limit)</p>
+      
+<div id="limitsControls">
+  <input id="limitsSearch" placeholder="Search name (type to filter)..." />
+  <label style="color:#cfcfe8;font-size:13px">Rows per page:
+    <select id="limitsPageSize" style="margin-left:8px;padding:6px;border-radius:8px">
+      <option>10</option><option>20</option><option>50</option>
+    </select>
+  </label>
+  <button id="btnSavePinned" style="margin-left:12px;padding:6px 10px;border-radius:8px">Save pinned</button>
+  <div id="limitsPager"></div>
+</div>
+
+<table id="limitsTbl">
+        <thead><tr><th>Name</th><th>Break limit (min)</th><th>SMM limit (min)</th><th> Set Productivity Target (MIN/SEC)</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="row" style="margin-top:10px">
+        <button id="btnSaveLimits">Save Limits</button>
+        <span id="limitsMsg" class="muted"></span>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- keep your original scripts -->
+  <script type="module" src="./firebase.js"></script>
+  <script type="module" src="./feature-flags.js"></script>
+  <script type="module" src="./admin.js"></script>
+  <!-- NEW: purely additive; real-time phase tracker -->
+  <script type="module" src="./admin-phases.js"></script>
+</body>
+</html>

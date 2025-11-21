@@ -1,0 +1,386 @@
+/* ==================== MOBILE-FIRST OPTIMIZATIONS ==================== */
+
+/* Touch-friendly interactions */
+@media (hover: none) and (pointer: coarse) {
+  .pill,
+  .responsive-button,
+  .btn {
+    min-height: 44px; /* Apple's recommended minimum touch target */
+    min-width: 44px;
+    padding: clamp(12px, 3vw, 16px) clamp(16px, 4vw, 24px);
+  }
+  
+  .pill:hover,
+  .responsive-button:hover,
+  .btn:hover {
+    transform: none; /* Disable hover effects on touch devices */
+  }
+  
+  .pill:active,
+  .responsive-button:active,
+  .btn:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* Improved scrolling on mobile */
+.wrap,
+.card,
+.responsive-card {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Better text rendering on mobile */
+@media screen and (max-width: 768px) {
+  body {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Prevent zoom on input focus (iOS) */
+input,
+select,
+textarea {
+  font-size: 16px; /* Prevents zoom on iOS */
+}
+
+@media screen and (max-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: clamp(16px, 4vw, 18px);
+  }
+}
+
+/* Safe area handling for notched devices */
+@supports (padding: max(0px)) {
+  .topbar {
+    padding-left: max(clamp(15px, 4vw, 30px), env(safe-area-inset-left));
+    padding-right: max(clamp(15px, 4vw, 30px), env(safe-area-inset-right));
+    padding-top: max(0px, env(safe-area-inset-top));
+  }
+  
+  .wrap {
+    padding-left: max(clamp(15px, 4vw, 40px), env(safe-area-inset-left));
+    padding-right: max(clamp(15px, 4vw, 40px), env(safe-area-inset-right));
+    padding-bottom: max(clamp(20px, 4vw, 40px), env(safe-area-inset-bottom));
+  }
+  
+  #floatingTimer {
+    right: max(clamp(15px, 3vw, 25px), env(safe-area-inset-right));
+    bottom: max(clamp(15px, 3vw, 25px), env(safe-area-inset-bottom));
+  }
+}
+
+/* Landscape orientation optimizations */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  .topbar {
+    height: clamp(50px, 8vh, 60px);
+  }
+  
+  .main-section {
+    margin: clamp(8px, 1.5vh, 15px) 0;
+  }
+  
+  .compact-live-clock {
+    font-size: clamp(1.5rem, 4vh, 2rem);
+  }
+  
+  .compact-timer-circle {
+    width: clamp(40px, 8vh, 60px);
+    height: clamp(40px, 8vh, 60px);
+  }
+  
+  .pill {
+    min-height: clamp(35px, 7vh, 45px);
+    padding: clamp(8px, 1.5vh, 12px) clamp(12px, 2vh, 16px);
+  }
+}
+
+/* High DPI display optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .nav-logo,
+  .compact-user-photo img,
+  .avatar img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Dark mode optimizations for mobile */
+@media (prefers-color-scheme: dark) and (max-width: 768px) {
+  body {
+    background: 
+      radial-gradient(ellipse at center, #1a0a1f 0%, #0f0510 35%, #050208 100%);
+  }
+  
+  .responsive-card,
+  .card {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .slide-up,
+  .slide-left,
+  .slide-right,
+  .fade-in {
+    animation: none !important;
+  }
+  
+  .pill,
+  .responsive-button {
+    transition: none !important;
+  }
+  
+  .compact-timer-circle svg circle {
+    transition: none !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .responsive-card,
+  .card {
+    border-width: 2px;
+    border-color: var(--text);
+  }
+  
+  .pill,
+  .responsive-button {
+    border: 2px solid var(--text);
+  }
+  
+  .compact-live-clock {
+    text-shadow: none;
+    font-weight: 900;
+  }
+}
+
+/* Print optimizations */
+@media print {
+  .topbar,
+  .controls,
+  #floatingTimer,
+  .no-print {
+    display: none !important;
+  }
+  
+  .wrap {
+    display: block !important;
+    max-width: none !important;
+    padding: 0 !important;
+  }
+  
+  .card,
+  .responsive-card {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #000 !important;
+    background: white !important;
+    color: black !important;
+    margin-bottom: 20px;
+  }
+  
+  .main-section {
+    display: block !important;
+  }
+  
+  .profile-section,
+  .timer-section {
+    width: 100% !important;
+    margin-bottom: 20px;
+  }
+}
+
+/* Focus management for keyboard navigation */
+.keyboard-navigation .pill:focus,
+.keyboard-navigation .responsive-button:focus,
+.keyboard-navigation .responsive-input:focus {
+  outline: 3px solid var(--primary) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 6px rgba(72, 3, 85, 0.2) !important;
+}
+
+/* Loading states */
+.loading-skeleton {
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0.1) 25%, 
+    rgba(255, 255, 255, 0.2) 50%, 
+    rgba(255, 255, 255, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: loading-shimmer 1.5s infinite;
+}
+
+@keyframes loading-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Connection status indicator */
+.connection-status {
+  position: fixed;
+  top: env(safe-area-inset-top, 0);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ef4444;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 0 0 8px 8px;
+  font-size: 0.8rem;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.connection-status.offline {
+  opacity: 1;
+}
+
+.connection-status.online {
+  background: #22c55e;
+}
+
+/* Performance optimizations */
+.gpu-layer {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+/* Smooth scrolling container */
+.smooth-scroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Better button states for mobile */
+@media (max-width: 768px) {
+  .pill,
+  .responsive-button {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .pill::after,
+  .responsive-button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease;
+  }
+  
+  .pill:active::after,
+  .responsive-button:active::after {
+    width: 300px;
+    height: 300px;
+  }
+}
+
+/* Improved modal behavior on mobile */
+@media (max-width: 768px) {
+  .modal {
+    padding: clamp(15px, 4vw, 20px);
+  }
+  
+  .modal-card {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border-radius: clamp(12px, 3vw, 20px);
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+  }
+}
+
+/* Better form controls on mobile */
+@media (max-width: 768px) {
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px;
+  }
+}
+
+/* Optimized animations for mobile */
+@media (max-width: 768px) {
+  .slide-up {
+    animation: mobileSlideUp 0.4s ease-out;
+  }
+  
+  .slide-left {
+    animation: mobileSlideLeft 0.4s ease-out;
+  }
+  
+  .slide-right {
+    animation: mobileSlideRight 0.4s ease-out;
+  }
+  
+  .fade-in {
+    animation: mobileFadeIn 0.4s ease-out;
+  }
+}
+
+@keyframes mobileSlideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes mobileSlideLeft {
+  from { 
+    opacity: 0; 
+    transform: translateX(-20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes mobileSlideRight {
+  from { 
+    opacity: 0; 
+    transform: translateX(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes mobileFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

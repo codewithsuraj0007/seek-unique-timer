@@ -1,0 +1,95 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isAdmin() {
+      return signedIn() && (request.auth.token.email == 'teamseekunique@gmail.com');
+    }
+
+    match /users/{uid} {
+      allow read: if signedIn(); // Allow all authenticated users to read user info for productivity comparison
+      allow create, update: if signedIn() && uid == request.auth.uid;
+      allow delete: if isAdmin();
+    }
+
+    match /userTimeLogs/{uid} {
+      allow read: if isAdmin() || (signedIn() && uid == request.auth.uid);
+      match /logs/{logId} {
+        allow read: if signedIn() && uid == request.auth.uid;
+        allow create: if signedIn()
+          && uid == request.auth.uid
+          && request.resource.data.userId == request.auth.uid;
+        allow update, delete: if signedIn()
+          && uid == request.auth.uid
+          && resource.data.userId == request.auth.uid;
+      }
+    }
+
+    match /timeLogsMaster/{logId} {
+      allow read: if isAdmin();
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    match /signals/{id} {
+      allow read: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /approvals/{id} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+
+    match /limits/{uid} {
+      allow read: if isAdmin() || (signedIn() && uid == request.auth.uid);
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /attendance/{docId} {
+      allow read: if isAdmin()
+                || (signedIn() && docId.startsWith(request.auth.uid + "_"));
+      allow create, update: if isAdmin()
+                || (signedIn() && (
+                      (request.resource.data.uid == request.auth.uid) ||
+                      (request.resource.data.userId == request.auth.uid)
+                    ));
+      allow delete: if isAdmin();
+    }
+
+    match /exit_requests/{requestId} {
+      allow create: if signedIn() && request.resource.data.user_id == request.auth.uid;
+      allow read, update: if isAdmin() || (signedIn() && resource.data.user_id == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
+    match /notifications/{notificationId} {
+      allow create: if signedIn();
+      allow read, update: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
+    match /hourlyReports/{reportId} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read: if signedIn(); // Allow all authenticated users to read hourly reports for productivity comparison
+      allow update, delete: if isAdmin();
+    }
+
+    match /targets/{uid} {
+      allow read: if isAdmin() || (signedIn() && uid == request.auth.uid);
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /activeSessions/{uid} {
+      allow read: if isAdmin() || (signedIn() && uid == request.auth.uid);
+      allow create, update, delete: if signedIn() && uid == request.auth.uid;
+    }
+
+    match /publicProductivity/{userId} {
+      allow read: if signedIn();
+      allow write: if signedIn() && request.auth.uid == userId;
+    }
+  }
+}

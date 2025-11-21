@@ -1,0 +1,79 @@
+<!-- renderer/floating.html -->
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Timer Overlay</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:;">
+    <style>
+      html, body { margin:0; background:transparent; }
+      /* Purple glass pill – drag anywhere */
+      #floatingTimer{
+        -webkit-app-region: drag;
+        display:flex; align-items:center; gap:12px;
+        padding:10px 14px; border-radius:14px;
+        font: 14px system-ui, Segoe UI, Roboto, Helvetica, Arial;
+        color:#fff;
+        background: linear-gradient(135deg,#3b0a91,#6b21a8);
+        opacity:.95;
+        border: 1px solid rgba(255,255,255,0.15);
+        box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+      }
+      #ftType { letter-spacing:.5px; font-weight:700; opacity:.9 }
+      #ftTime { font-variant-numeric: tabular-nums; }
+
+      /* Buttons must be no-drag (clickable) */
+      .no-drag { -webkit-app-region: no-drag; }
+      .actions { display:flex; gap:6px; margin-left:6px; }
+      .btn {
+        border:none; border-radius:10px; padding:4px 8px;
+        font-weight:700; letter-spacing:.2px; cursor:pointer; outline:none;
+        color:#fff; background: rgba(255,255,255,0.15);
+      }
+      .btn:active { transform: translateY(1px); }
+
+      .w { background: linear-gradient(135deg,#16a34a,#4ade80); }
+      .m { background: linear-gradient(135deg,#2563eb,#60a5fa); }
+      .l { background: linear-gradient(135deg,#f59e0b,#fde047); color:#231b2e; }
+      .b { background: linear-gradient(135deg,#0d9488,#22d3ee); }
+    </style>
+  </head>
+  <body>
+    <div id="floatingTimer">
+      <span id="ftType">WORK</span>
+      <span id="ftTime">00:00:00</span>
+
+      <!-- Quick-action buttons -->
+      <div class="actions no-drag">
+        <button class="btn w" title="Start Work"    id="btnWork">W</button>
+        <button class="btn m" title="Start Meeting" id="btnMeeting">M</button>
+        <button class="btn l" title="Start Lunch"   id="btnLunch">L</button>
+        <button class="btn b" title="Start Break"   id="btnBreak">B</button>
+      </div>
+    </div>
+
+    <script>
+      // Format helper (matches app.js)
+      const fmt = (sec=0) => {
+        sec = Number(sec)||0;
+        const h=String(Math.floor(sec/3600)).padStart(2,'0');
+        const m=String(Math.floor((sec%3600)/60)).padStart(2,'0');
+        const s=String(Math.floor(sec%60)).padStart(2,'0');
+        return `${h}:${m}:${s}`;
+      };
+
+      // Update from main/renderer
+      window.eTimer?.on?.('overlay:update', (p = {}) => {
+        document.getElementById('ftType').textContent = String(p.type || '—').toUpperCase();
+        document.getElementById('ftTime').textContent = fmt(p.seconds || 0);
+      });
+
+      // Send quick commands back to app.js (expects eTimer.sendCmd)
+      const send = (t) => window.eTimer?.sendCmd?.(t);
+      document.getElementById('btnWork')   .addEventListener('click', () => send('work'));
+      document.getElementById('btnMeeting').addEventListener('click', () => send('meeting'));
+      document.getElementById('btnLunch')  .addEventListener('click', () => send('lunch'));
+      document.getElementById('btnBreak')  .addEventListener('click', () => send('break'));
+    </script>
+  </body>
+</html>

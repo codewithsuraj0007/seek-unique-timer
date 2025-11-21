@@ -1,0 +1,152 @@
+<!-- overlay/overlay.html -->
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Seek Unique — Overlay</title>
+    <!-- keep simple CSP; we rely on preload for IPC -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:;">
+    <style>
+      :root{
+        --glass: rgba(40,22,72,.85);         /* deep purple glass */
+        --accent: #8b5cf6;                   /* violet accent */
+        --text: #ffffff;
+      }
+      html, body { margin:0; background:transparent; }
+      * { box-sizing:border-box; }
+
+      /* Card fits 300x90 window (see main.js) */
+      #card{
+        -webkit-app-region: drag;            /* drag anywhere except buttons */
+        width: 100%;
+        height: 100%;
+        display:flex;
+        align-items:center;
+        gap:12px;
+        padding:10px 12px;
+        font: 13px/1.2 system-ui, "Segoe UI", Roboto, Helvetica, Arial;
+        color: var(--text);
+        background: var(--glass);
+        border: 1px solid rgba(255,255,255,.14);
+        border-radius: 14px;
+        box-shadow: 0 10px 24px rgba(0,0,0,.35);
+        backdrop-filter: blur(8px);
+      }
+
+      #left{
+        min-width: 86px;
+        display:flex;
+        flex-direction:column;
+        gap:4px;
+      }
+      #type{
+        font-weight: 800;
+        letter-spacing:.5px;
+        opacity: .95;
+      }
+      #time{
+        font-variant-numeric: tabular-nums;
+        font-weight:600;
+        opacity:.95;
+      }
+
+      #controls{
+        -webkit-app-region: no-drag;
+        margin-left:auto;
+        display:flex;
+        gap:6px;
+      }
+
+      .btn{
+        -webkit-app-region: no-drag;
+        appearance:none;
+        border: 1px solid rgba(255,255,255,.18);
+        background: rgba(255,255,255,.10);
+        color: var(--text);
+        padding:6px 8px;
+        border-radius:10px;
+        font-weight:700;
+        letter-spacing:.2px;
+        cursor:pointer;
+        transition: transform .08s ease, background .15s ease, border-color .15s ease;
+        user-select:none;
+      }
+      .btn:hover{ background: rgba(255,255,255,.16); border-color: rgba(255,255,255,.28); }
+      .btn:active{ transform: translateY(1px) scale(.98); }
+
+      #open{
+        margin-left: 2px;
+        border-color: rgba(139,92,246,.55);
+        background: linear-gradient(180deg, rgba(139,92,246,.28), rgba(139,92,246,.18));
+      }
+
+      /* tiny “edge bounce” hint when clamped */
+      @keyframes edge-bounce {
+        0%   { transform: translateX(0) translateY(0); }
+        25%  { transform: translateX(-3px) translateY(-2px); }
+        50%  { transform: translateX(0) translateY(0); }
+        75%  { transform: translateX(3px) translateY(2px); }
+        100% { transform: translateX(0) translateY(0); }
+      }
+      .bounce { animation: edge-bounce .32s ease-out; }
+    </style>
+  </head>
+  <body>
+    <div id="card">
+      <div id="left">
+        <div id="type">WORK</div>
+        <div id="time">00:00:00</div>
+      </div>
+
+      <div id="controls" aria-label="Quick actions">
+        <button class="btn" data-type="work"    title="Work start">Work</button>
+        <button class="btn" data-type="meeting" title="Meeting">Meet</button>
+        <button class="btn" data-type="lunch"   title="Lunch">Lunch</button>
+        <button class="btn" data-type="break"   title="Break">Break</button>
+        <button class="btn" id="open" title="Open full app">Open</button>
+      </div>
+    </div>
+
+    <script>
+      // format seconds -> HH:MM:SS
+      const fmt = (sec=0) => {
+        sec = Number(sec)||0;
+        const h=String(Math.floor(sec/3600)).padStart(2,'0');
+        const m=String(Math.floor((sec%3600)/60)).padStart(2,'0');
+        const s=String(Math.floor(sec%60)).padStart(2,'0');
+        return `${h}:${m}:${s}`;
+      };
+
+      // wire quick action buttons
+      document.querySelectorAll('.btn[data-type]').forEach(b=>{
+        b.addEventListener('click', (e)=>{
+          const t = e.currentTarget.getAttribute('data-type');
+          // tell main -> forward to main renderer (app.js -> startOrSwitch)
+          window.eTimer?.sendCmd?.(t);
+        });
+      });
+
+      // open main app window
+      document.getElementById('open').addEventListener('click', () => {
+        window.eTimer?.openApp?.();
+      });
+
+      // receive timer updates from main
+      window.eTimer?.on?.('overlay:update', (p = {}) => {
+        document.getElementById('type').textContent = String(p.type || '—').toUpperCase();
+        document.getElementById('time').textContent = fmt(p.seconds || 0);
+      });
+
+      // tiny bounce when overlay position was clamped to screen edge
+      window.eTimer?.on?.('overlay:bounce', () => {
+        const card = document.getElementById('card');
+        card.classList.remove('bounce'); // restart animation if already running
+        // next frame
+        requestAnimationFrame(() => {
+          card.classList.add('bounce');
+          setTimeout(()=>card.classList.remove('bounce'), 400);
+        });
+      });
+    </script>
+  </body>
+</html>

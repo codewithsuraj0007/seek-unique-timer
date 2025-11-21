@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Seek Unique Timer — Sign in</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/png" href="../assets/seekuniquelogo.png" />
+  <meta name="theme-color" content="#1e003d"/>
+
+  <style>
+    :root{
+      --bg1:#1e003d; --bg2:#4b0082; --text:#fff;
+      --glass:rgba(255,255,255,.09); --border:rgba(255,255,255,.12);
+      --shadow:0 20px 60px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif; color:var(--text);
+      background:
+        radial-gradient(800px 600px at 15% 8%, rgba(255,255,255,.08), transparent 40%),
+        radial-gradient(760px 600px at 88% 12%, rgba(255,255,255,.07), transparent 45%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      display:grid; place-items:center; perspective:1200px; overflow:hidden;
+    }
+    .login-card{
+      width:min(520px,92vw); padding:28px 26px 24px; border-radius:18px;
+      background:var(--glass); border:1px solid var(--border); box-shadow:var(--shadow);
+      backdrop-filter: blur(16px); text-align:center; transform-style:preserve-3d;
+      transition:transform .15s ease;
+    }
+    .logo{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;margin:6px auto 12px;
+      background:rgba(255,255,255,.06);border:1px solid var(--border);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+    .btn-google{width:100%;border:none;border-radius:12px;padding:12px 14px;font-weight:700;color:#fff;
+      background:linear-gradient(135deg,#7c3aed,#a78bfa);box-shadow:0 10px 26px rgba(124,58,237,.35);cursor:pointer}
+    .muted{opacity:.8}
+  </style>
+</head>
+<body>
+  <div class="login-card" id="loginCard">
+    <div class="logo"><img src="../assets/seekuniquelogo.png" alt="logo" style="width:28px"></div>
+    <h2 style="margin:6px 0 4px">Welcome back</h2>
+    <p class="muted" style="margin:-4px 0 16px">Sign in to start tracking your time</p>
+    <button id="btnGoogle" class="btn-google">Continue with Google</button>
+    <p class="muted" style="margin-top:10px">Only company accounts are allowed</p>
+  </div>
+
+  <script type="module" src="./login.js"></script>
+
+  <!-- Subtle 3D tilt -->
+  <script>
+    (function(){
+      const card=document.getElementById('loginCard');
+      function move(e){
+        const r=card.getBoundingClientRect(), cx=r.left+r.width/2, cy=r.top+r.height/2;
+        const dx=(e.clientX-cx)/r.width, dy=(e.clientY-cy)/r.height;
+        card.style.transform=`rotateY(${dx*8}deg) rotateX(${-dy*8}deg)`;
+      }
+      function reset(){ card.style.transform='rotateY(0) rotateX(0)' }
+      window.addEventListener('mousemove',move);
+      window.addEventListener('mouseleave',reset);
+    })();
+  </script>
+</body>
+</html>
