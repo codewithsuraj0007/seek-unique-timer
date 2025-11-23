@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seek Unique Timer - UI Demo</title>
+  <style>
+    :root {
+      --primary: #480355;
+      --primary-light: #6b1a7a;
+      --bg1: #0a0a0f;
+      --text: #ffffff;
+      --card: rgba(255, 255, 255, 0.05);
+      --border: rgba(255, 255, 255, 0.1);
+      --shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(ellipse at center, #430045 0%, #2d0233 35%, #1a0a1f 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    .topbar {
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-title-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, #480355, #6b1a7a, #ff6b9d);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 2px;
+      animation: gradientFlow 3s ease-in-out infinite;
+      text-transform: uppercase;
+    }
+
+    @keyframes gradientFlow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 8px 16px 8px 8px;
+      backdrop-filter: blur(20px);
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border: 2px solid var(--border);
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 30px;
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.86fr 1fr;
+      gap: 30px;
+    }
+
+    .card {
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      backdrop-filter: blur(20px);
+      box-shadow: var(--shadow);
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card h3 {
+      margin: 0 0 20px;
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .pill {
+      border: none;
+      padding: 16px 20px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-height: 55px;
+    }
+
+    .pill:hover {
+      transform: translateY(-3px) scale(1.05);
+    }
+
+    #btnWork { background: linear-gradient(135deg, #4f065c, #6b1a7a); }
+    #btnMeeting { background: linear-gradient(135deg, #2563eb, #60a5fa); }
+    #btnLunch { background: linear-gradient(135deg, #f59e0b, #fde047); color: #1a1a1a; }
+    #btnBreak { background: linear-gradient(135deg, #0d9488, #22d3ee); }
+    #btnSMM { background: linear-gradient(135deg, #e11d48, #fb7185); }
+    #btnActivity { background: linear-gradient(135deg, #8b5cf6, #c4b5fd); }
+
+    .centerTimer {
+      margin: 30px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    #liveClock {
+      font-size: 3.5rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--text);
+    }
+
+    #liveType {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: #fff;
+      border-radius: 25px;
+      padding: 10px 20px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .box {
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: 20px;
+      padding: 20px;
+      margin: 15px 0;
+    }
+
+    .demo-note {
+      background: rgba(255, 193, 7, 0.1);
+      border: 1px solid rgba(255, 193, 7, 0.3);
+      border-radius: 12px;
+      padding: 15px;
+      margin: 20px 0;
+      text-align: center;
+      color: #ffc107;
+    }
+
+    @media (max-width: 1200px) {
+      .wrap { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="nav-title">
+      <h3 class="nav-title-text">Seek Unique Timer</h3>
+    </div>
+    <div class="profile">
+      <div class="avatar"><span>U</span></div>
+      <span>Demo User</span>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section class="card">
+      <h3>Start an Activity</h3>
+      
+      <div class="demo-note">
+        ✨ This is a UI demo. Backend features are disabled.
+      </div>
+
+      <div class="controls">
+        <button class="pill" id="btnWork">💼 WORK</button>
+        <button class="pill" id="btnMeeting">🤝 MEETING</button>
+        <button class="pill" id="btnLunch">🍽 LUNCH</button>
+        <button class="pill" id="btnBreak">⏰ BREAK</button>
+        <button class="pill" id="btnSMM">📱 SMM</button>
+        <button class="pill" id="btnActivity">🏃 ACTIVITY</button>
+      </div>
+
+      <div class="centerTimer">
+        <div id="liveClock">00:00:00</div>
+        <div id="liveType">—</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>My Totals</h3>
+      <div class="box">
+        <p>Work: 00:00:00</p>
+        <p>Meeting: 00:00:00</p>
+        <p>Lunch: 00:00:00</p>
+        <p>Break: 00:00:00</p>
+        <p>SMM: 00:00:00</p>
+        <p>Activity: 00:00:00</p>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    let currentType = null;
+    let startTime = null;
+    let timerInterval = null;
+
+    const liveClock = document.getElementById('liveClock');
+    const liveType = document.getElementById('liveType');
+
+    function startTimer(type) {
+      if (timerInterval) clearInterval(timerInterval);
+      
+      currentType = type;
+      startTime = Date.now();
+      liveType.textContent = type.toUpperCase();
+
+      timerInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
+        const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
+        const s = String(elapsed % 60).padStart(2, '0');
+        liveClock.textContent = `${h}:${m}:${s}`;
+      }, 1000);
+    }
+
+    document.getElementById('btnWork').addEventListener('click', () => startTimer('work'));
+    document.getElementById('btnMeeting').addEventListener('click', () => startTimer('meeting'));
+    document.getElementById('btnLunch').addEventListener('click', () => startTimer('lunch'));
+    document.getElementById('btnBreak').addEventListener('click', () => startTimer('break'));
+    document.getElementById('btnSMM').addEventListener('click', () => startTimer('smm'));
+    document.getElementById('btnActivity').addEventListener('click', () => startTimer('activity'));
+  </script>
+</body>
+</html>
